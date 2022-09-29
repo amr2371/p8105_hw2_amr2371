@@ -1,0 +1,11 @@
+---
+title: "Homework 2"
+author: "Allison Randy-Cofie"
+date: "2022-09-29"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
