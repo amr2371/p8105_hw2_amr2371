@@ -13,6 +13,14 @@ knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
 library(readxl)
 ```
+### Problem 1
+```{r}
+nyc = read_csv("./nyc_transit.csv") %>% 
+  janitor::clean_names() %>% 
+  select(line, station_name,station_latitude,station_longitude, route1:route11,entry,vending,entrance_type,ada) 
+```
+
+
 
 ### Problem 2
 
@@ -79,8 +87,10 @@ Putting them together
 ```{r}
 final_df = 
   pols_df %>% 
-  left_join(snp_df, by = c("year","month")) %>% 
-  left_join(umemp_df, by = c("year", "month"))
+  left_join(snp_df, by = c("year","month")) #%>% 
+  #left_join(umemp_df, by = c("year", "month"))
+
+
 ```
 
 
