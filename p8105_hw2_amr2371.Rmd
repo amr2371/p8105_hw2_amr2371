@@ -38,4 +38,50 @@ Combining the data
 trash_df=bind_rows(mr_df,prof_df)
 ```
 
+### Problem 3
+```{r}
+pols_df= read_csv("./fivethirtyeight_datasets/pols-month.csv") %>% 
+  janitor::clean_names() %>% 
+  separate(mon, into = c("year","month","day")) %>% 
+  mutate(month = month.abb[as.numeric(month)],
+  president = recode(prez_dem, `1` = "dem", `0` = "gop")) %>% 
+  select(-c(prez_gop, prez_dem, day)) 
+```
+
+```{r}
+snp_df = read_csv("./fivethirtyeight_datasets/snp.csv") 
+dates <- snp_df$date %>% as.Date(., "%m/%d/%y")
+dates <- as.Date(ifelse(dates > Sys.Date(), format(dates, "19%y-%m-%d"), format(dates)))
+snp_df$date = dates
+
+snp_df = snp_df %>% 
+  janitor::clean_names() %>% 
+  separate(date, into = c("day","month","year")) %>% 
+  mutate(month = month.abb[as.numeric(month)]) %>% 
+  arrange(year, month) %>% 
+  relocate(year, month)
+```
+
+```{r}
+umemp_df= read_csv("./fivethirtyeight_datasets/unemployment.csv") %>% 
+  janitor::clean_names() %>%
+   pivot_longer(
+    jan:dec, 
+    names_to = "month",
+    values_to = "unemp_rate"
+  ) %>% 
+  arrange(year, month) %>% 
+  relocate(year, month)
+```
+
+
+Putting them together
+```{r}
+final_df = 
+  pols_df %>% 
+  left_join(snp_df, by = c("year","month")) %>% 
+  left_join(umemp_df, by = c("year", "month"))
+```
+
+
 
