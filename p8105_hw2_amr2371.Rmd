@@ -11,8 +11,8 @@ library(tidyverse)
 library(readxl)
 ```
 ### Problem 1
-```{r}
-nyc = read_csv("./nyc_transit.csv") %>% 
+```{r, message=FALSE}
+nyc <- read_csv("./nyc_transit.csv") %>% 
   janitor::clean_names() %>% 
   select(line, station_name,station_latitude,station_longitude, route1:route11,entry,vending,entrance_type,ada) 
 ```
@@ -23,7 +23,7 @@ nyc = read_csv("./nyc_transit.csv") %>%
 
 Load the datasets
 ```{r}
-mr_df = read_excel("./Trash-Wheel-Collection-Totals-7-2020-2.xlsx","Mr. Trash Wheel","A2:N534")%>%
+mr_df <- read_excel("./Trash-Wheel-Collection-Totals-7-2020-2.xlsx","Mr. Trash Wheel","A2:N534")%>%
  janitor::clean_names() %>% 
   drop_na(year) %>% 
   mutate(sports_balls=as.integer(sports_balls)) %>% 
@@ -31,7 +31,7 @@ mr_df = read_excel("./Trash-Wheel-Collection-Totals-7-2020-2.xlsx","Mr. Trash Wh
 ```
 
 ```{r}
-prof_df = read_excel("./Trash-Wheel-Collection-Totals-7-2020-2.xlsx","Professor Trash Wheel","A2:N116")%>%
+prof_df <- read_excel("./Trash-Wheel-Collection-Totals-7-2020-2.xlsx","Professor Trash Wheel","A2:N116")%>%
  janitor::clean_names() %>% 
   drop_na(dumpster) %>% 
   mutate(sports_balls=as.integer(sports_balls))%>% 
@@ -40,20 +40,18 @@ prof_df = read_excel("./Trash-Wheel-Collection-Totals-7-2020-2.xlsx","Professor 
 
 Combining the data
 ```{r}
-trash_df=bind_rows(mr_df,prof_df)
+trash_df <- bind_rows(mr_df,prof_df)
 ```
-Write a paragraph about these data; you are encouraged to use inline R. Be sure to note the number of observations in the resulting dataset, and give examples of key variables. For available data, what was the total weight of trash collected by Professor Trash Wheel? What was the total number of sports balls collected by Mr. Trash Wheel in 2020?
-
 In the Mr. Trash Wheel data set there are `r nrow(mr_df)` observations and `r ncol(mr_df)` variables. Some of the key variables in this dataset are Weight of trash in tons and the volume of trash in cubic yards. The total number of sports balls collected in 2020 by Mr. Trash Wheel is `r mr_df %>% filter(year == 2020) %>% summarize(sum(sports_balls))`.
 
-In the Professor Trash Wheel data set there are `r nrow(prof_df)` observations and `r ncol(prof_df)` variables. Some of the key variables in this dataset are Weight of trash in tons and the volume of trash in cubic yards. The total weight of trash collected by Professor Trash Wheel is `r prof_df %>%summarize(sum(weight_tons))`.
-
-
+In the Professor Trash Wheel data set there are `r nrow(prof_df)` observations and `r ncol(prof_df)` variables. Some of the key variables in this dataset are Weight of trash in tons and the volume of trash in cubic yards. The total weight of trash collected by Professor Trash Wheel is `r prof_df %>%summarize(sum(weight_tons))` tons.
 
 
 ### Problem 3
-```{r}
-pols_df= read_csv("./fivethirtyeight_datasets/pols-month.csv") %>% 
+
+Load the datasets and clean them
+```{r, message=FALSE}
+pols_df <- read_csv("./fivethirtyeight_datasets/pols-month.csv") %>% 
   janitor::clean_names() %>% 
   separate(mon, into = c("year","month","day")) %>% 
   mutate(month = month.abb[as.numeric(month)],
@@ -61,13 +59,14 @@ pols_df= read_csv("./fivethirtyeight_datasets/pols-month.csv") %>%
   select(-c(prez_gop, prez_dem, day)) 
 ```
 
-```{r}
-snp_df = read_csv("./fivethirtyeight_datasets/snp.csv") 
-dates <- snp_df$date %>% as.Date(., "%m/%d/%y")
-dates <- as.Date(ifelse(dates > Sys.Date(), format(dates, "19%y-%m-%d"), format(dates)))
+```{r, message=FALSE}
+snp_df <- read_csv("./fivethirtyeight_datasets/snp.csv") 
+dates <- snp_df$date %>% 
+  as.Date(., "%m/%d/%y") %>%  
+  as.Date(ifelse(dates > Sys.Date(), format(dates, "19%y-%m-%d"), format(dates)))
 snp_df$date = dates
 
-snp_df = snp_df %>% 
+snp_df <- snp_df %>% 
   janitor::clean_names() %>% 
   separate(date, into = c("year","month","day")) %>% 
   mutate(month = month.abb[as.numeric(month)]) %>% 
@@ -75,13 +74,13 @@ snp_df = snp_df %>%
   relocate(year, month)
 ```
 
-```{r}
-umemp_df<- read_csv("./fivethirtyeight_datasets/unemployment.csv") %>% 
+```{r, message=FALSE}
+unemp_df<- read_csv("./fivethirtyeight_datasets/unemployment.csv") %>% 
   janitor::clean_names() %>%
    pivot_longer(
     jan:dec, 
     names_to = "month",
-    values_to = "unemp_rate"
+    values_to = "unemployment_rate"
   ) %>% 
   arrange(year, month) %>% 
   relocate(year, month) %>% 
@@ -89,15 +88,18 @@ umemp_df<- read_csv("./fivethirtyeight_datasets/unemployment.csv") %>%
 ```
 
 
-Putting them together
+Putting the datasets together
 ```{r}
-final_df = 
+final_df <- 
   pols_df %>% 
   left_join(snp_df, by = c("year","month")) %>% 
-  left_join(umemp_df, by = c("year", "month"))
+  left_join(unemp_df, by = c("year", "month"))
 
 
 ```
 
+The `pols-month.csv` dataset contains information about politicians and the number of which are democratic or republican govenors or senators. After cleaning it has `r nrow(pols_df)` observations and `r ncol(pols_df)` variables. The `snp.csv` dataset contains information about the stock S&P's closing value for each day of observation. After cleaning, this data set has `r nrow(snp_df)` observations and `r ncol(snp_df)` variables. The `unemployment.csv` dataset contains information about the unemployment rate for each month throughout the years in the dataset. After cleaning, this dataset has 
+`r nrow(unemp_df)` observations and `r ncol(unemp_df)` variables. 
 
 
+After combining the datasets, the resulting data set contains `r nrow(final_df)` observations and `r ncol(final_df)` variables. The years included in the combined dataset range from `r min(final_df$year)` to `r max(final_df$year)`. Some of the key variables are `president`, `close`, and `unemp_rate`.
