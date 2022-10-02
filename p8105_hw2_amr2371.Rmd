@@ -5,11 +5,8 @@ date: "2022-09-29"
 output: github_document
 ---
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-```
 
-```{r message=FALSE}
+```{r setup, message=FALSE}
 library(tidyverse)
 library(readxl)
 ```
@@ -47,7 +44,9 @@ trash_df=bind_rows(mr_df,prof_df)
 ```
 Write a paragraph about these data; you are encouraged to use inline R. Be sure to note the number of observations in the resulting dataset, and give examples of key variables. For available data, what was the total weight of trash collected by Professor Trash Wheel? What was the total number of sports balls collected by Mr. Trash Wheel in 2020?
 
-In the Mr. Trash Wheel data set there are `r nrow(mr_df)` rows and `r ncol(mr_df)` variables. Some of the key variables in this dataset are Weight of trash in tons and the volume of trash in cubic yards. The total number of sports balls collected in 2020 by Mr. Trash Wheel is `r mr_df %>% filter(year == 2020) %>% summarize(sum(total))`
+In the Mr. Trash Wheel data set there are `r nrow(mr_df)` observations and `r ncol(mr_df)` variables. Some of the key variables in this dataset are Weight of trash in tons and the volume of trash in cubic yards. The total number of sports balls collected in 2020 by Mr. Trash Wheel is `r mr_df %>% filter(year == 2020) %>% summarize(sum(sports_balls))`.
+
+In the Professor Trash Wheel data set there are `r nrow(prof_df)` observations and `r ncol(prof_df)` variables. Some of the key variables in this dataset are Weight of trash in tons and the volume of trash in cubic yards. The total weight of trash collected by Professor Trash Wheel is `r prof_df %>%summarize(sum(weight_tons))`.
 
 
 
