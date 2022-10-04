@@ -78,26 +78,27 @@ trans_ent %>%
   distinct
 ```
 
-
+There are 465 distinct stations with 84 being ADA compliant. The proportion of station entrances/ exits without vending is 0.377. 
+60 distinct stations serve the A train and of the 60, 17 of them are ADA compliant.
 
 
 ### Problem 2
 
 Load the datasets
 ```{r}
-mr_df <- read_excel("./Trash-Wheel-Collection-Totals-7-2020-2.xlsx","Mr. Trash Wheel","A2:N534")%>%
+mr_df <- read_excel("./Trash Wheel Collection Data.xlsx","Mr. Trash Wheel","A2:N549")%>%
  janitor::clean_names() %>% 
-  drop_na(year) %>% 
+  drop_na() %>% 
   mutate(sports_balls=as.integer(sports_balls)) %>% 
    mutate(trash_wheel = "mr")
 ```
 
 ```{r}
-prof_df <- read_excel("./Trash-Wheel-Collection-Totals-7-2020-2.xlsx","Professor Trash Wheel","A2:N116")%>%
+prof_df <- read_excel("./Trash Wheel Collection Data.xlsx","Professor Trash Wheel","A2:M96")%>%
  janitor::clean_names() %>% 
   drop_na(dumpster) %>% 
-  mutate(sports_balls=as.integer(sports_balls))%>% 
-   mutate(trash_wheel = "prof")
+   mutate(trash_wheel = "prof") %>% 
+  mutate(year=as.character(year))
 ```
 
 Combining the data
